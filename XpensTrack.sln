@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F3FFAA74-A7A9-4003-9229-29512EF47B1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WalletApi", "..\src\XpensTrack\WalletApi\WalletApi.csproj", "{148A50BF-AB04-4692-BCD4-ADF3D878D495}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionApi", "src\TransactionApi\TransactionApi.csproj", "{92608942-EB0F-4C18-9222-0DA509400B4F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "src\Shared\Shared.csproj", "{2403E6DF-4C96-419A-AC0C-E1B69AFA3C0E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{148A50BF-AB04-4692-BCD4-ADF3D878D495}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{148A50BF-AB04-4692-BCD4-ADF3D878D495}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{148A50BF-AB04-4692-BCD4-ADF3D878D495}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{148A50BF-AB04-4692-BCD4-ADF3D878D495}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92608942-EB0F-4C18-9222-0DA509400B4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92608942-EB0F-4C18-9222-0DA509400B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92608942-EB0F-4C18-9222-0DA509400B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92608942-EB0F-4C18-9222-0DA509400B4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2403E6DF-4C96-419A-AC0C-E1B69AFA3C0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2403E6DF-4C96-419A-AC0C-E1B69AFA3C0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2403E6DF-4C96-419A-AC0C-E1B69AFA3C0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2403E6DF-4C96-419A-AC0C-E1B69AFA3C0E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{148A50BF-AB04-4692-BCD4-ADF3D878D495} = {F3FFAA74-A7A9-4003-9229-29512EF47B1C}
+		{92608942-EB0F-4C18-9222-0DA509400B4F} = {F3FFAA74-A7A9-4003-9229-29512EF47B1C}
+		{2403E6DF-4C96-419A-AC0C-E1B69AFA3C0E} = {F3FFAA74-A7A9-4003-9229-29512EF47B1C}
+	EndGlobalSection
+EndGlobal

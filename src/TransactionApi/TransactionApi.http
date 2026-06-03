@@ -1,0 +1,7 @@
+@TransactionApi_HostAddress = http://localhost:5136
+
+GET {{TransactionApi_HostAddress}}/api/transactions
+Accept: application/json
+
+###
+POST {{TransactionApi_HostAddress}}/api/transactions
