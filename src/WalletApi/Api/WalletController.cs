@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WalletApi.Api.Model;
 using WalletApi.Application.Command;
@@ -7,20 +9,23 @@ using WalletApi.Application.Query;
 namespace WalletApi.Api;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class WalletController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateWalletRequest request)
     {
-        // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var defaultCurrency = User.FindFirstValue("defaultCurrency");
+
         var command = new CreateWallet(
             Name: request.Name,
             Amount: request.Amount,
             CurrencyCode: request.CurrencyCode,
             WalletTypeId: request.WalletTypeId,
-            "123", //todo user
-            "RSD",
+            userId!,
+            defaultCurrency!,
             DefaultCurrencyExchangeRate: 1.0M);
 
         var resultId = await mediator.Send(request: command);
@@ -36,10 +41,11 @@ public class WalletController(IMediator mediator) : ControllerBase
         return result is not null ? Ok(value: result) : NotFound();
     }
 
-    [HttpGet("user/{userId}")]
-    public async Task<IActionResult> GetAllWalletsOverview(string userId)
+    [HttpGet("user")]
+    public async Task<IActionResult> GetAllWalletsOverview()
     {
-        var result = await mediator.Send(new GetAllWalletsOverview(userId));
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await mediator.Send(new GetAllWalletsOverview(userId!));
 
         return result is not null ? Ok(result) : NotFound();
     }
@@ -47,9 +53,11 @@ public class WalletController(IMediator mediator) : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateWalletRequest request)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         await mediator.Send(request: new UpdateWallet(
             WalletId: id,
-            UserId:"123",
+            UserId: userId!,
             NewName: request.NewName,
             NewTypeId: request.NewTypeId));
 

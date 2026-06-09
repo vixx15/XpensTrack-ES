@@ -10,8 +10,7 @@ namespace TransactionApi.Domain;
 public class TransactionAggregate
 {
     public int Version { get; set; }
-    [Identity]
-    public Guid TransactionId { get; private set; }
+    [Identity] public Guid TransactionId { get; private set; }
     public WalletDetails Wallet { get; private set; }
     public Money Money { get; private set; }
     public TransactionCategorization Categorization { get; private set; }
@@ -103,6 +102,7 @@ public class TransactionAggregate
         Money newAmount,
         TransactionCategorization newCategorization,
         string newDescription,
+        string userId,
         DateTimeOffset newOccurredAt,
         TransferDetails? newTransferDetails
     )
@@ -143,6 +143,7 @@ public class TransactionAggregate
 
         yield return new TransactionUpdated(
             TransactionId: transactionId,
+            UserId: userId,
             OldWalletId: Wallet.WalletId,
             OldAmount: Money,
             OldDefaultCurrencyAmount: GetDefaultCurrencyMoney(),
@@ -246,7 +247,7 @@ public class TransactionAggregate
         }*/
     }
 
-    public IEnumerable<object> DeleteTransaction(Guid transactionId)
+    public IEnumerable<object> DeleteTransaction(Guid transactionId, string userId)
     {
         if (Deleted)
         {
@@ -257,6 +258,7 @@ public class TransactionAggregate
             TransactionId: transactionId,
             WalletId: Wallet.WalletId,
             Amount: Money,
+            UserId: userId,
             TransactionType: Categorization.Type,
             TransactionCategory: Categorization.CategoryId,
             OccuredAt: OccuredAt,

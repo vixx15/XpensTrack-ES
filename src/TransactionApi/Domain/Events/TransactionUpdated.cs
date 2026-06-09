@@ -5,6 +5,7 @@ namespace TransactionApi.Domain.Events;
 public record TransactionUpdated(
     Guid TransactionId,
     Guid OldWalletId,
+    string UserId,
     Money OldAmount,
     Money OldDefaultCurrencyAmount,
     TransactionType OldTransactionType,

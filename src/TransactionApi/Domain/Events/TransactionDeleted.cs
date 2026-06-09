@@ -5,6 +5,7 @@ namespace TransactionApi.Domain.Events;
 public sealed record TransactionDeleted(
     Guid TransactionId,
     Guid WalletId,
+    string UserId,
     Money Amount,
     TransactionType TransactionType,
     int? TransactionCategory,

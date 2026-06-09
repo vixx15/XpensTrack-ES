@@ -7,8 +7,8 @@ public class MonthlyReportProjection : MultiStreamProjection<MonthlyReport, stri
 {
     public MonthlyReportProjection()
     {
-        Identity<TransactionCreated>(identityFunc: e => $"{e.OccuredAt:yyyy-MM}");
-        Identity<TransactionDeleted>(identityFunc: e => $"{e.OccuredAt:yyyy-MM}");
+        Identity<TransactionCreated>(identityFunc: e => $"{e.OccuredAt:yyyy-MM}-{e.UserId}");
+        Identity<TransactionDeleted>(identityFunc: e => $"{e.OccuredAt:yyyy-MM}-{e.UserId}");
         /*
         Identity<TransactionAmountUpdated>(identityFunc: e => $"{e.OccuredAt:yyyy-MM}");
         FanOut<TransactionOccuredAtUpdated, string>(fanOutFunc: e => new[] {
@@ -17,8 +17,8 @@ public class MonthlyReportProjection : MultiStreamProjection<MonthlyReport, stri
         }.Distinct());*/
 
         Identities<TransactionUpdated>(identitiesFunc: e => new[] {
-            $"{e.OldOccuredAt:yyyy-MM}",
-            $"{e.NewOccurredAt:yyyy-MM}"
+            $"{e.OldOccuredAt:yyyy-MM}-{e.UserId}",
+            $"{e.NewOccurredAt:yyyy-MM}-{e.UserId}"
         }.Where(id => !string.IsNullOrWhiteSpace(id))
             .Distinct()
             .ToList());
@@ -26,7 +26,7 @@ public class MonthlyReportProjection : MultiStreamProjection<MonthlyReport, stri
 
     public MonthlyReport Create(TransactionCreated @event)
     {
-        var reportId = $"{@event.OccuredAt:yyyy-MM}";
+        var reportId = $"{@event.OccuredAt:yyyy-MM}-{@event.UserId}";
         var monthStart = new DateTimeOffset(
             year: @event.OccuredAt.Year,
             month: @event.OccuredAt.Month,
@@ -68,8 +68,8 @@ public class MonthlyReportProjection : MultiStreamProjection<MonthlyReport, stri
 
     public void Apply(MonthlyReport current, TransactionUpdated e)
     {
-        var oldMonthId = $"{e.OldOccuredAt:yyyy-MM}";
-        var newMonthId = $"{e.NewOccurredAt:yyyy-MM}";
+        var oldMonthId = $"{e.OldOccuredAt:yyyy-MM}-{e.UserId}";
+        var newMonthId = $"{e.NewOccurredAt:yyyy-MM}-{e.UserId}";
 
         if (oldMonthId == newMonthId)
         {

@@ -20,7 +20,7 @@ public class DeleteTransactionHandler(IDocumentStore documentStore) : IRequestHa
             throw new Exception(message: $"Transakcija sa ID-em {command.TransactionId} ne postoji.");
         }
 
-        var events = aggregate.DeleteTransaction(transactionId: command.TransactionId);
+        var events = aggregate.DeleteTransaction(transactionId: command.TransactionId, userId: command.UserId);
         session.Events.Append(stream: command.TransactionId, events: events);
         session.Events.ArchiveStream(command.TransactionId); 
         await session.SaveChangesAsync();

@@ -37,10 +37,13 @@ public class UpdateTransactionHandler(IDocumentStore documentStore) : IRequestHa
                     FromCurrencyCode: command.CurrencyCode,
                     ToCurrencyCode: command.DefaultCurrencyCode)),
             newAmount: new Money(value: command.Amount, currencyCode: command.CurrencyCode),
-            newCategorization: new TransactionCategorization(type: command.TransactionType,
+            newCategorization: new TransactionCategorization(
+                type: command.TransactionType,
                 categoryId: command.TransactionCategoryId),
             newDescription: command.Description,
-            newOccurredAt: command.OccurredAt, newTransferDetails: transferDetails);
+            userId: command.UserId,
+            newOccurredAt: command.OccurredAt,
+            newTransferDetails: transferDetails);
 
         session.Events.Append(stream: command.TransactionId, events: events);
 

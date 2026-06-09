@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TransactionApi.Api.Model;
 using TransactionApi.Application.Command;
@@ -7,23 +9,26 @@ using TransactionApi.Application.Query;
 namespace TransactionApi.Api.Controller;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class TransactionsController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateTransactionRequest request)
     {
-        // var userId= User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var defaultCurrency = User.FindFirstValue("defaultCurrency");
+
         var command = new CreateTransaction(
             WalletId: request.Wallet.WalletId,
-            "123", //todo user
+            userId!,
             Amount: request.Amount,
             TransactionType: request.TransactionType,
             TransactionSubCategory: request.TransactionSubCategory,
             Description: request.Description,
             OccuredAt: request.OccuredAt,
             CurrencyCode: request.Wallet.CurrencyCode,
-            "RSD", //TODO reading user defaultCurrency logic
+            defaultCurrency!,
             DefaultCurrencyExchangeRate: 1.0M, //TODO exchangeRate logic
             ToWalletId: request.TransferWallet?.ToWalletId,
             ToWalletCurrencyId: request.TransferWallet?.ToWalletCurrencyCode,
@@ -38,6 +43,9 @@ public class TransactionsController(IMediator mediator) : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateDescription(Guid id, [FromBody] UpdateTransactionRequest request)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var defaultCurrency = User.FindFirstValue("defaultCurrency");
+
         var transactionTransferTarget = request.TransferDetails is not null
             ? new UpdateTransactionTransferWallet(ToWalletId: request.TransferDetails.ToWalletId,
                 ToWalletCurrencyCode: request.TransferDetails.ToWalletCurrencyCode,
@@ -48,14 +56,15 @@ public class TransactionsController(IMediator mediator) : ControllerBase
             TransactionId: id,
             WalletId: request.Wallet.WalletId,
             Amount: request.Amount,
+            UserId: userId!,
             TransactionType: request.TransactionType,
             TransactionCategoryId: request.TransactionSubCategory,
             Description: request.Description,
             OccurredAt: request.OccuredAt,
             CurrencyCode: request.Wallet.CurrencyCode,
             TransferWallet: transactionTransferTarget,
-            DefaultCurrencyExchangeRate: 1.0M, //TODO
-            DefaultCurrencyCode: "RSD"
+            DefaultCurrencyExchangeRate: 1.0M, //TODO exchangeRate logic
+            DefaultCurrencyCode: defaultCurrency!
         ));
         return NoContent();
     }
@@ -63,7 +72,8 @@ public class TransactionsController(IMediator mediator) : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTransaction(Guid id)
     {
-        await mediator.Send(request: new DeleteTransaction(id, "123"));
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        await mediator.Send(request: new DeleteTransaction(id, userId!));
         return NoContent();
     }
 
@@ -78,9 +88,8 @@ public class TransactionsController(IMediator mediator) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
-        //var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-
-        var results = await mediator.Send(request: new GetUserTransactions("123"));
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var results = await mediator.Send(request: new GetUserTransactions(userId!));
 
         return Ok(value: results);
     }
@@ -88,7 +97,8 @@ public class TransactionsController(IMediator mediator) : ControllerBase
     [HttpGet("reports/{month:int}/{year:int}")]
     public async Task<IActionResult> GetReport(int month, int year)
     {
-        var result = await mediator.Send(request: new GetMonthlyReportById(Id: $"{year}-{month:00}"));
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await mediator.Send(request: new GetMonthlyReportById(Id: $"{year}-{month:00}-{userId}"));
         return result is not null ? Ok(value: result) : NotFound();
     }
 }

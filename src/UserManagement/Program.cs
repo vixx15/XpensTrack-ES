@@ -1,19 +1,23 @@
 using System.Text;
-using JasperFx.Events.Daemon;
-using JasperFx.Events.Projections;
-using Marten;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using WalletApi.Projections;
+using UserManagement.Data;
+using UserManagement.Services;
 
-var builder = WebApplication.CreateBuilder(args: args);
-var martenConnectionString = builder.Configuration.GetConnectionString("wallet_db");
+var builder = WebApplication.CreateBuilder(args);
+
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var jwtSecret = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret is not configured. Set Jwt__Secret environment variable or user-secret.");
 var secretKey = Encoding.UTF8.GetBytes(jwtSecret);
 
 builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -32,27 +36,29 @@ builder.Services.AddAuthorization();
 
 builder.Services
     .AddOpenApi()
-    .AddControllers()
-    .Services
-    .AddMarten(configure: options =>
-    {
-        options.Connection(connectionString: martenConnectionString!);
-        options.CreateDatabasesForTenants(configure: c =>
-        {
-            c.ForTenant()
-                .CheckAgainstPgDatabase()
-                .WithOwner("postgres");
-        });
-        options.Projections.Add<WalletSummaryProjection>(lifecycle: ProjectionLifecycle.Async);
-        options.Projections.Add<AllWalletsOverviewProjection>(lifecycle: ProjectionLifecycle.Async);
-    })    
-    .AddAsyncDaemon(mode: DaemonMode.Solo)
-    .UseLightweightSessions();
+    .AddControllers();
 
-builder.Services.AddMediatR(configuration: cfg =>
+builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(assembly: typeof(Program).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
 });
+
+builder.Services.AddScoped<IJwtService, JwtService>();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("user_db")));
+
+builder.Services
+    .AddIdentityCore<AppUser>(options =>
+    {
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 6;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddSignInManager();
 
 var app = builder.Build();
 
