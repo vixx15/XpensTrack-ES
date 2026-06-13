@@ -13,8 +13,8 @@ public class WalletSummaryProjection : SingleStreamProjection<WalletSummary, Gui
                 Name: e.Name,
                 Amount: e.Amount.Value,
                 CurrencyCode: e.Amount.CurrencyCode,
-                WalletTypeId: e.WalletTypeId,
-                "", //TODO
+                WalletTypeId: (int)e.WalletType,
+                "",
                 DefaultCurrencyAmount: e.DefaultCurrencyAmount.Value,
                 DefaultCurrencyCode: e.DefaultCurrencyAmount.CurrencyCode));
 
@@ -22,6 +22,6 @@ public class WalletSummaryProjection : SingleStreamProjection<WalletSummary, Gui
             summary with { Name = changed.NewName });
 
         ProjectEvent<WalletTypeChanged>(
-            handler: (summary, changed) => summary with { WalletTypeId = changed.NewTypeId });
+            handler: (summary, changed) => summary with { WalletTypeId = (int)changed.NewType });
     }
 }

@@ -62,23 +62,23 @@ public class AllWalletsOverviewProjection : MultiStreamProjection<AllWalletsOver
 
         var updatedCategories = current.WalletsByCategories.Select(category =>
         {
-            if (category.CategoryId == @event.WalletTypeId)
+            if (category.CategoryId == (int)@event.OldType)
             {
                 return RevertSummary(category, targetAccount);
             }
 
-            if (category.CategoryId == @event.NewTypeId)
+            if (category.CategoryId == (int)@event.NewType)
             {
-                return ApplySummary(category, targetAccount with { WalletTypeId = @event.NewTypeId });
+                return ApplySummary(category, targetAccount with { WalletTypeId = (int)@event.NewType });
             }
 
             return category;
         }).Where(stats => !stats.Accounts.IsEmpty()).ToList();
 
-        if (!updatedCategories.Exists(stats => stats.CategoryId == @event.NewTypeId))
+        if (!updatedCategories.Exists(stats => stats.CategoryId == (int)@event.NewType))
         {
-            updatedCategories.Add(ApplySummary(new WalletsByCategoryStats(@event.NewTypeId, []),
-                targetAccount with { WalletTypeId = @event.NewTypeId }));
+            updatedCategories.Add(ApplySummary(new WalletsByCategoryStats((int)@event.NewType, []),
+                targetAccount with { WalletTypeId = (int)@event.NewType }));
         }
 
         return current with { WalletsByCategories = updatedCategories };
@@ -89,7 +89,7 @@ public class AllWalletsOverviewProjection : MultiStreamProjection<AllWalletsOver
     {
         var updatedCategories = current.WalletsByCategories.ToList();
 
-        var categoryStats = updatedCategories.FirstOrDefault(c => c.CategoryId == @event.WalletTypeId);
+        var categoryStats = updatedCategories.FirstOrDefault(c => c.CategoryId == (int)@event.WalletType);
 
         var newWalletSummary = CreateNewWalletSummary(@event);
 
@@ -102,7 +102,7 @@ public class AllWalletsOverviewProjection : MultiStreamProjection<AllWalletsOver
         {
             updatedCategories.Add(ApplySummary(
                 new WalletsByCategoryStats(
-                    CategoryId: @event.WalletTypeId,
+                    CategoryId: (int)@event.WalletType,
                     Accounts: []),
                 newWalletSummary));
         }
@@ -154,8 +154,8 @@ public class AllWalletsOverviewProjection : MultiStreamProjection<AllWalletsOver
             Name: @event.Name,
             @event.Amount.Value,
             @event.Amount.CurrencyCode,
-            @event.WalletTypeId,
-            "", //TODO
+            (int)@event.WalletType,
+            "",
             @event.DefaultCurrencyAmount.Value,
             @event.DefaultCurrencyAmount.CurrencyCode);
     }

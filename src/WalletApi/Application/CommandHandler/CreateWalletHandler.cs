@@ -17,7 +17,7 @@ public class CreateWalletHandler(IDocumentStore documentStore) : IRequestHandler
             walletId: walletId,
             name: command.Name,
             amount: new Money(value: command.Amount, currencyCode: command.CurrencyCode),
-            walletTypeId: command.WalletTypeId,
+            walletType: command.WalletType,
             userId: command.UserId,
             defaultCurrencyExchangeRate: command.DefaultCurrencyExchangeRate,
             defaultCurrencyCode: command.DefaultCurrencyCode);

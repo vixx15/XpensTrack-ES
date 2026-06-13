@@ -23,7 +23,7 @@ public class WalletController(IMediator mediator) : ControllerBase
             Name: request.Name,
             Amount: request.Amount,
             CurrencyCode: request.CurrencyCode,
-            WalletTypeId: request.WalletTypeId,
+            WalletType: request.WalletType,
             userId!,
             defaultCurrency!,
             DefaultCurrencyExchangeRate: 1.0M);
@@ -59,7 +59,7 @@ public class WalletController(IMediator mediator) : ControllerBase
             WalletId: id,
             UserId: userId!,
             NewName: request.NewName,
-            NewTypeId: request.NewTypeId));
+            NewType: request.NewType));
 
         return NoContent();
     }

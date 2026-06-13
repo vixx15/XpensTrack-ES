@@ -23,7 +23,7 @@ public class UpdateWalletHandler(IDocumentStore documentStore) : IRequestHandler
                 walletId: command.WalletId,
                 userId:command.UserId,
                 name: command.NewName,
-                walletTypeId: command.NewTypeId)
+                walletType: command.NewType)
             .ToArray();
 
         if (events.Length == 0)

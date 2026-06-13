@@ -130,4 +130,31 @@
   <data name="TransactionType_Transfer" xml:space="preserve">
     <value>Transfer</value>
   </data>
+  <data name="WalletType_Cash" xml:space="preserve">
+    <value>Cash</value>
+  </data>
+  <data name="WalletType_Card" xml:space="preserve">
+    <value>Card</value>
+  </data>
+  <data name="WalletType_DebitCard" xml:space="preserve">
+    <value>Debit Card</value>
+  </data>
+  <data name="WalletType_CreditCard" xml:space="preserve">
+    <value>Credit Card</value>
+  </data>
+  <data name="WalletType_BankAccount" xml:space="preserve">
+    <value>Bank Account</value>
+  </data>
+  <data name="WalletType_Savings" xml:space="preserve">
+    <value>Savings</value>
+  </data>
+  <data name="WalletType_EWallet" xml:space="preserve">
+    <value>E-Wallet</value>
+  </data>
+  <data name="WalletType_Investment" xml:space="preserve">
+    <value>Investment</value>
+  </data>
+  <data name="WalletType_Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
 </root>

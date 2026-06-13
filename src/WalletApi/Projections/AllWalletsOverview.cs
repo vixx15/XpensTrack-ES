@@ -13,7 +13,7 @@ public record AllWalletsOverview(
 );
 
 public record WalletsByCategoryStats(
-    long CategoryId,
+    int CategoryId,
     List<WalletSummary> Accounts,
     decimal Total = 0.0M,
     decimal Assets = 0.0M,

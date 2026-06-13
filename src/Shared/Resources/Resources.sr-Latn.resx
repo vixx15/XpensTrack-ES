@@ -130,4 +130,31 @@
   <data name="TransactionType_Transfer" xml:space="preserve">
     <value>Transfer</value>
   </data>
+  <data name="WalletType_Cash" xml:space="preserve">
+    <value>Gotovina</value>
+  </data>
+  <data name="WalletType_Card" xml:space="preserve">
+    <value>Kartica</value>
+  </data>
+  <data name="WalletType_DebitCard" xml:space="preserve">
+    <value>Debitna kartica</value>
+  </data>
+  <data name="WalletType_CreditCard" xml:space="preserve">
+    <value>Kreditna kartica</value>
+  </data>
+  <data name="WalletType_BankAccount" xml:space="preserve">
+    <value>Bankovni račun</value>
+  </data>
+  <data name="WalletType_Savings" xml:space="preserve">
+    <value>Štednja</value>
+  </data>
+  <data name="WalletType_EWallet" xml:space="preserve">
+    <value>E-Novčanik</value>
+  </data>
+  <data name="WalletType_Investment" xml:space="preserve">
+    <value>Investicija</value>
+  </data>
+  <data name="WalletType_Other" xml:space="preserve">
+    <value>Ostalo</value>
+  </data>
 </root>

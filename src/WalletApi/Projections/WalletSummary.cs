@@ -5,7 +5,7 @@ public record WalletSummary(
     string Name,
     decimal Amount,
     string CurrencyCode,
-    long WalletTypeId,
+    int WalletTypeId,
     string TypeName,
     decimal DefaultCurrencyAmount,
     string DefaultCurrencyCode);

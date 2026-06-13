@@ -14,7 +14,7 @@ public class WalletAggregate
     public Guid WalletId { get; private set; }
     public string Name { get; private set; }
     public Money Amount { get; private set; }
-    public long WalletTypeId { get; private set; }
+    public WalletType WalletType { get; private set; }
     public string UserId { get; private set; }
     public CurrencyConversion DefaultCurrencyConversion { get; private set; }
 
@@ -27,15 +27,18 @@ public class WalletAggregate
         Guid walletId,
         string name,
         Money amount,
-        long walletTypeId,
+        WalletType walletType,
         string userId,
         decimal defaultCurrencyExchangeRate, string defaultCurrencyCode)
     {
+        if (!Enum.IsDefined(typeof(WalletType), walletType))
+            throw new ArgumentException($"Invalid wallet type value: {(int)walletType}");
+
         yield return new WalletCreated(
             WalletId: walletId,
             Name: name,
             Amount: amount,
-            WalletTypeId: walletTypeId,
+            WalletType: walletType,
             UserId: userId,
             DefaultCurrencyExchangeRate: defaultCurrencyExchangeRate,
             DefaultCurrencyAmount: new Money(value: amount.Value * defaultCurrencyExchangeRate,
@@ -45,26 +48,32 @@ public class WalletAggregate
 
     public IEnumerable<object> UpdateWallet(Guid walletId,
         string userId,
-        string name, long walletTypeId)
+        string name, WalletType walletType)
     {
+        if (!Enum.IsDefined(typeof(WalletType), walletType))
+            throw new ArgumentException($"Invalid wallet type value: {(int)walletType}");
+
         if (name != Name && name.IsNotEmpty())
         {
             yield return new WalletNameChanged(WalletId: walletId, userId, NewName: name);
         }
 
-        if (walletTypeId != WalletTypeId && walletTypeId > 0)
+        if (walletType != WalletType)
         {
-            yield return new WalletTypeChanged(WalletId: walletId, userId, NewTypeId: walletTypeId,
-                WalletTypeId: WalletTypeId);
+            yield return new WalletTypeChanged(WalletId: walletId, userId, NewType: walletType,
+                OldType: WalletType);
         }
     }
 
     public WalletAggregate(WalletCreated walletCreated)
     {
+        if (!Enum.IsDefined(typeof(WalletType), walletCreated.WalletType))
+            throw new ArgumentException($"Invalid wallet type value: {(int)walletCreated.WalletType}");
+
         WalletId = walletCreated.WalletId;
         Name = walletCreated.Name;
         Amount = new Money(value: walletCreated.Amount.Value, currencyCode: walletCreated.Amount.CurrencyCode);
-        WalletTypeId = walletCreated.WalletTypeId;
+        WalletType = walletCreated.WalletType;
         UserId = walletCreated.UserId;
         DefaultCurrencyConversion = new CurrencyConversion(
             ExchangeRate: walletCreated.DefaultCurrencyExchangeRate,
@@ -80,6 +89,6 @@ public class WalletAggregate
 
     public void Apply(IEvent<WalletTypeChanged> @event)
     {
-        WalletTypeId = @event.Data.NewTypeId;
+        WalletType = @event.Data.NewType;
     }
 }

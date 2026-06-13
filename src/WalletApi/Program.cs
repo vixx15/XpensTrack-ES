@@ -1,9 +1,12 @@
+using System.Globalization;
 using System.Text;
 using JasperFx.Events.Daemon;
 using JasperFx.Events.Projections;
 using Marten;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.IdentityModel.Tokens;
+using Shared;
 using WalletApi.Projections;
 
 var builder = WebApplication.CreateBuilder(args: args);
@@ -34,6 +37,8 @@ builder.Services
     .AddOpenApi()
     .AddControllers()
     .Services
+    .AddLocalization()
+    .AddSingleton<WalletTypeDisplayNames>()
     .AddMarten(configure: options =>
     {
         options.Connection(connectionString: martenConnectionString!);
@@ -62,6 +67,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRequestLocalization(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture("en");
+    options.SupportedCultures = [CultureInfo.GetCultureInfo("en"), CultureInfo.GetCultureInfo("sr-Latn")];
+    options.SupportedUICultures = [CultureInfo.GetCultureInfo("en"), CultureInfo.GetCultureInfo("sr-Latn")];
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
