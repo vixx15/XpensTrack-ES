@@ -8,7 +8,7 @@ public record CreateTransaction(
     string UserId,
     decimal Amount,
     TransactionType TransactionType,
-    int? TransactionSubCategory,
+    TransactionCategory? Category,
     string Description,
     DateTimeOffset OccuredAt,
     string CurrencyCode,

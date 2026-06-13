@@ -11,6 +11,7 @@ public record TransactionReadModel
 
     public int? CategoryId { get; init; }
     public string? CategoryName { get; init; }
+    public string? TypeName { get; init; }
 
     public DateTimeOffset Time { get; init; }
     public string UserId { get; init; }

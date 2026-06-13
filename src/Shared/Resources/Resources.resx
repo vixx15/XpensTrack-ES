@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Category_Salary" xml:space="preserve">
+    <value>Salary</value>
+  </data>
+  <data name="Category_Bonus" xml:space="preserve">
+    <value>Bonus</value>
+  </data>
+  <data name="Category_Gift" xml:space="preserve">
+    <value>Gift</value>
+  </data>
+  <data name="Category_Freelance" xml:space="preserve">
+    <value>Freelance</value>
+  </data>
+  <data name="Category_Scholarship" xml:space="preserve">
+    <value>Scholarship</value>
+  </data>
+  <data name="Category_Pension" xml:space="preserve">
+    <value>Pension</value>
+  </data>
+  <data name="Category_Aid" xml:space="preserve">
+    <value>Aid</value>
+  </data>
+  <data name="Category_Rent" xml:space="preserve">
+    <value>Rent</value>
+  </data>
+  <data name="Category_Investment" xml:space="preserve">
+    <value>Investment</value>
+  </data>
+  <data name="Category_House" xml:space="preserve">
+    <value>House</value>
+  </data>
+  <data name="Category_Groceries" xml:space="preserve">
+    <value>Groceries</value>
+  </data>
+  <data name="Category_Transport" xml:space="preserve">
+    <value>Transport</value>
+  </data>
+  <data name="Category_Utilities" xml:space="preserve">
+    <value>Utilities</value>
+  </data>
+  <data name="Category_Health" xml:space="preserve">
+    <value>Health</value>
+  </data>
+  <data name="Category_Hobby" xml:space="preserve">
+    <value>Hobby</value>
+  </data>
+  <data name="Category_Clothing" xml:space="preserve">
+    <value>Clothing</value>
+  </data>
+  <data name="Category_Restaurants" xml:space="preserve">
+    <value>Restaurants &amp; Cafes</value>
+  </data>
+  <data name="Category_Electronics" xml:space="preserve">
+    <value>Electronics</value>
+  </data>
+  <data name="Category_Education" xml:space="preserve">
+    <value>Education</value>
+  </data>
+  <data name="Category_Children" xml:space="preserve">
+    <value>Children</value>
+  </data>
+  <data name="Category_Pets" xml:space="preserve">
+    <value>Pets</value>
+  </data>
+  <data name="TransactionType_Income" xml:space="preserve">
+    <value>Income</value>
+  </data>
+  <data name="TransactionType_Expense" xml:space="preserve">
+    <value>Expense</value>
+  </data>
+  <data name="TransactionType_Transfer" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+</root>

@@ -8,7 +8,7 @@ public sealed record TransactionCreated(
     string UserId,
     Money Amount,
     TransactionType TransactionType,
-    int? TransactionCategory,
+    TransactionCategory? TransactionCategory,
     string Description,
     DateTimeOffset OccuredAt,
     Money DefaultCurrencyAmount,

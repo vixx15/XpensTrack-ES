@@ -46,7 +46,7 @@ public class MonthlyReportProjection : MultiStreamProjection<MonthlyReport, stri
         };
 
         report.ApplyTransaction(type: @event.TransactionType,
-            categoryId: @event.TransactionCategory,
+            categoryId: (int?)@event.TransactionCategory,
             defaultCurrencyAmount: @event.DefaultCurrencyAmount,
             weekOfMonth: @event.OccuredAt.GetWeekOfMonth(),
             weekStart: @event.OccuredAt.StartOfWeek());
@@ -58,7 +58,7 @@ public class MonthlyReportProjection : MultiStreamProjection<MonthlyReport, stri
     {
         current.ApplyTransaction(
             type: e.TransactionType,
-            categoryId: e.TransactionCategory,
+            categoryId: (int?)e.TransactionCategory,
             defaultCurrencyAmount: e.DefaultCurrencyAmount,
             weekOfMonth: e.OccuredAt.GetWeekOfMonth(),
             weekStart: e.OccuredAt.StartOfWeek()
@@ -75,12 +75,12 @@ public class MonthlyReportProjection : MultiStreamProjection<MonthlyReport, stri
         {
             current.RevertTransaction(
                 type: e.OldTransactionType,
-                categoryId: e.OldTransactionCategory,
+                categoryId: (int?)e.OldTransactionCategory,
                 defaultCurrencyAmount: e.OldDefaultCurrencyAmount,
                 weekOfMonth: e.OldOccuredAt.GetWeekOfMonth());
             current.ApplyTransaction(
                 type: e.NewTransactionType,
-                categoryId: e.NewTransactionCategory,
+                categoryId: (int?)e.NewTransactionCategory,
                 defaultCurrencyAmount: e.NewDefaultCurrencyAmount,
                 weekOfMonth: e.NewOccurredAt.GetWeekOfMonth(),
                 weekStart: e.NewOccurredAt.StartOfWeek());
@@ -91,7 +91,7 @@ public class MonthlyReportProjection : MultiStreamProjection<MonthlyReport, stri
             {
                 current.RevertTransaction(
                     type: e.OldTransactionType,
-                    categoryId: e.OldTransactionCategory,
+                categoryId: (int?)e.OldTransactionCategory,
                     defaultCurrencyAmount: e.OldDefaultCurrencyAmount,
                     weekOfMonth: e.OldOccuredAt.GetWeekOfMonth());
             }
@@ -99,7 +99,7 @@ public class MonthlyReportProjection : MultiStreamProjection<MonthlyReport, stri
             {
                 current.ApplyTransaction(
                     type: e.NewTransactionType,
-                    categoryId: e.NewTransactionCategory,
+                categoryId: (int?)e.NewTransactionCategory,
                     defaultCurrencyAmount: e.NewDefaultCurrencyAmount,
                     weekOfMonth: e.NewOccurredAt.GetWeekOfMonth(),
                     weekStart: e.NewOccurredAt.StartOfWeek());
@@ -111,73 +111,8 @@ public class MonthlyReportProjection : MultiStreamProjection<MonthlyReport, stri
     {
         current.RevertTransaction(
             @event.TransactionType,
-            @event.TransactionCategory,
+            (int?)@event.TransactionCategory,
             @event.DefaultCurrencyAmount,
             @event.OccuredAt.GetWeekOfMonth());
     }
-
-    /*  public void Apply(MonthlyReport current, TransactionAmountUpdated e)
-      {
-          current.RevertTransaction(type: e.TransactionType, categoryId: e.TransactionSubCategory,
-              defaultCurrencyAmount: e.PreviousDefaultCurrencyAmount,
-              weekOfMonth: GetWeekOfMonth(date: e.OccuredAt));
-
-          current.ApplyTransaction(type: e.TransactionType, categoryId: e.TransactionSubCategory,
-              defaultCurrencyAmount: e.NewDefaultCurrencyAmount,
-              weekOfMonth: GetWeekOfMonth(date: e.OccuredAt), weekStart: StartOfWeek(dt: e.OccuredAt));
-      }
-
-      public void Apply(MonthlyReport current, TransactionTypeUpdated e)
-      {
-          current.RevertTransaction(type: e.PreviousTransactionType, categoryId: e.PreviousTransactionCategory,
-              defaultCurrencyAmount: e.DefaultCurrencyAmount,
-              weekOfMonth: GetWeekOfMonth(date: e.OccuredAt));
-
-          current.ApplyTransaction(type: e.NewTransactionType, categoryId: e.NewTransactionCategory,
-              defaultCurrencyAmount: e.DefaultCurrencyAmount,
-              weekOfMonth: GetWeekOfMonth(date: e.OccuredAt), weekStart: StartOfWeek(dt: e.OccuredAt));
-      }
-
-      public void Apply(MonthlyReport current, TransactionCategoryUpdated e)
-      {
-          current.RevertTransaction(type: e.TransactionType, categoryId: e.PreviousTransactionCategory,
-              defaultCurrencyAmount: e.DefaultCurrencyAmount,
-              weekOfMonth: GetWeekOfMonth(date: e.OccuredAt));
-
-          current.ApplyTransaction(type: e.TransactionType, categoryId: e.NewTransactionCategory,
-              defaultCurrencyAmount: e.DefaultCurrencyAmount,
-              weekOfMonth: GetWeekOfMonth(date: e.OccuredAt), weekStart: StartOfWeek(dt: e.OccuredAt));
-      }
-
-      public void Apply(MonthlyReport current, TransactionOccuredAtUpdated e)
-      {
-          var previousMonth = e.PreviousOccuredAt.Month;
-          var newMonth = e.NewOccuredAt.Month;
-
-          if (previousMonth != newMonth)
-          {
-              if (current.MonthStart.Month == previousMonth)
-              {
-                  current.RevertTransaction(type: e.TransactionType, categoryId: e.TransactionCategory,
-                      defaultCurrencyAmount: e.DefaultCurrencyAmount,
-                      weekOfMonth: GetWeekOfMonth(date: e.PreviousOccuredAt));
-              }
-              else
-              {
-                  current.ApplyTransaction(type: e.TransactionType, categoryId: e.TransactionCategory,
-                      defaultCurrencyAmount: e.DefaultCurrencyAmount,
-                      weekOfMonth: GetWeekOfMonth(date: e.NewOccuredAt), weekStart: StartOfWeek(dt: e.NewOccuredAt));
-              }
-          }
-          else
-          {
-              current.RevertTransaction(type: e.TransactionType, categoryId: e.TransactionCategory,
-                  defaultCurrencyAmount: e.DefaultCurrencyAmount,
-                  weekOfMonth: GetWeekOfMonth(date: e.PreviousOccuredAt));
-
-              current.ApplyTransaction(type: e.TransactionType, categoryId: e.TransactionCategory,
-                  defaultCurrencyAmount: e.DefaultCurrencyAmount,
-                  weekOfMonth: GetWeekOfMonth(date: e.NewOccuredAt), weekStart: StartOfWeek(dt: e.NewOccuredAt));
-          }
-      }*/
 }

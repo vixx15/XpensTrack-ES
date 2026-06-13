@@ -8,7 +8,7 @@ public sealed record TransactionDeleted(
     string UserId,
     Money Amount,
     TransactionType TransactionType,
-    int? TransactionCategory,
+    TransactionCategory? TransactionCategory,
     DateTimeOffset OccuredAt,
     Money DefaultCurrencyAmount,
     Guid? ToWalletId,

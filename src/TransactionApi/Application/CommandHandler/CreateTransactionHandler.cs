@@ -32,7 +32,7 @@ public class CreateTransactionHandler(IDocumentStore documentStore) : IRequestHa
             amount: amount,
             categorization: new TransactionCategorization(
                 type: command.TransactionType,
-                categoryId: command.TransactionSubCategory),
+                category: command.Category),
             description: command.Description,
             occuredAt: command.OccuredAt,
             defaultCurrencyCode: command.DefaultCurrencyCode,

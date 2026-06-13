@@ -13,7 +13,7 @@ public class TransactionReadModelProjection : SingleStreamProjection<Transaction
             Amount = e.Amount.Value,
             Currency = e.Amount.CurrencyCode,
             TransactionType = e.TransactionType,
-            CategoryId = e.TransactionCategory,
+            CategoryId = (int?)e.TransactionCategory,
             Time = e.OccuredAt,
             UserId = e.UserId,
             Description = e.Description,
@@ -34,7 +34,7 @@ public class TransactionReadModelProjection : SingleStreamProjection<Transaction
                 Amount = e.NewAmount.Value,
                 Currency = e.NewWalletCurrencyCode,
                 TransactionType = e.NewTransactionType,
-                CategoryId = e.NewTransactionCategory,
+                CategoryId = (int?)e.NewTransactionCategory,
                 Time = e.NewOccurredAt,
                 Description = e.NewDescription,
                 WalletId = e.NewWalletId,
@@ -45,44 +45,5 @@ public class TransactionReadModelProjection : SingleStreamProjection<Transaction
                 ToWalletCurrency = e.NewToWalletCurrencyCode,
                 ToWalletAmount = e.NewToWalletAmount?.Value
             });
-
-        /*ProjectEvent<TransactionDescriptionUpdated>(handler: (item, e) =>
-            item with { Description = e.Description });
-
-        ProjectEvent<TransactionAmountUpdated>(handler: (item, e) =>
-            item with {
-                Amount = e.NewAmount.Value,
-                DefaultCurrencyAmount = e.NewDefaultCurrencyAmount.Value
-            });
-
-        ProjectEvent<TransactionTypeUpdated>(handler: (item, e) =>
-            item with {
-                TransactionType = e.NewTransactionType,
-                CategoryId = e.NewTransactionCategory
-            });
-
-        ProjectEvent<TransactionCategoryUpdated>(handler: (item, e) =>
-            item with {
-                CategoryId = e.NewTransactionCategory
-            });
-
-        ProjectEvent<TransactionOccuredAtUpdated>(handler: (item, e) =>
-            item with { Time = e.NewOccuredAt });
-
-        ProjectEvent<TransactionWalletUpdated>(handler: (item, e) =>
-            item with {
-                WalletId = e.WalletId,
-                Currency = e.WalletCurrencyId,
-                DefaultCurrencyAmount = item.Amount * e.WalletExchangeRate
-            });
-
-        ProjectEvent<TransactionWalletToUpdated>(handler: (item, e) =>
-            item with {
-                ToWalletId = e.WalletToId,
-                ToWalletCurrency = e.WalletToCurrencyId,
-                ToWalletAmount = e.WalletToExchangeRate.HasValue
-                    ? item.Amount * e.WalletToExchangeRate.Value
-                    : null
-            });*/
     }
 }

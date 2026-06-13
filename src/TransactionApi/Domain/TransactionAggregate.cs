@@ -56,7 +56,7 @@ public class TransactionAggregate
             UserId: userId,
             Amount: amount,
             TransactionType: categorization.Type,
-            TransactionCategory: categorization.CategoryId,
+            TransactionCategory: categorization.Category,
             Description: description,
             OccuredAt: occuredAt,
             DefaultCurrencyAmount: new Money(value: amount.Value * defaultCurrencyExchangeRate,
@@ -79,7 +79,7 @@ public class TransactionAggregate
 
         TransactionId = created.TransactionId;
         Categorization =
-            new TransactionCategorization(type: created.TransactionType, categoryId: created.TransactionCategory);
+            new TransactionCategorization(type: created.TransactionType, category: created.TransactionCategory);
         Description = created.Description;
         OccuredAt = created.OccuredAt;
 
@@ -148,7 +148,7 @@ public class TransactionAggregate
             OldAmount: Money,
             OldDefaultCurrencyAmount: GetDefaultCurrencyMoney(),
             OldTransactionType: Categorization.Type,
-            OldTransactionCategory: Categorization.CategoryId,
+            OldTransactionCategory: Categorization.Category,
             OldDescription: Description,
             OldOccuredAt: OccuredAt,
             OldToWalletId: TransferDetails?.ToWalletId,
@@ -158,7 +158,7 @@ public class TransactionAggregate
             NewAmount: newAmount,
             NewDefaultCurrencyAmount: newDefaultCurrencyAmount,
             NewTransactionType: newCategorization.Type,
-            NewTransactionCategory: newCategorization.CategoryId,
+            NewTransactionCategory: newCategorization.Category,
             NewDescription: newDescription,
             NewOccurredAt: newOccurredAt,
             NewToWalletId: newTransferDetails?.ToWalletId,
@@ -166,85 +166,6 @@ public class TransactionAggregate
             NewToWalletCurrencyExchangeRate: newTransferDetails?.ToWalletConversion.ExchangeRate,
             NewToWalletCurrencyCode: newTransferDetails?.ToWalletConversion.ToCurrencyCode
         );
-
-
-        /*
-        if (newWallet != Wallet)
-        {
-            yield return new TransactionWalletUpdated(TransactionId: transactionId, WalletId: newWallet.WalletId,
-                WalletExchangeRate: newWallet.DefaultCurrencyConversion.ExchangeRate,
-                WalletCurrencyId: newWallet.DefaultCurrencyConversion.FromCurrencyCode);
-        }
-
-        if (newAmount != Money)
-        {
-            yield return new TransactionAmountUpdated(
-                TransactionId: transactionId,
-                PreviousAmount: Money,
-                PreviousDefaultCurrencyAmount: GetDefaultCurrencyMoney(),
-                NewAmount: newAmount,
-                NewDefaultCurrencyAmount: Wallet.DefaultCurrencyConversion.Convert(newAmount),
-                TransactionType: Categorization.Type,
-                TransactionSubCategory: Categorization.CategoryId,
-                OccuredAt: OccuredAt);
-        }
-
-        if (newOccurredAt != OccuredAt)
-        {
-            yield return new TransactionOccuredAtUpdated(
-                TransactionId: transactionId,
-                TransactionType: Categorization.Type,
-                TransactionCategory: Categorization.CategoryId,
-                PreviousOccuredAt: OccuredAt,
-                NewOccuredAt: newOccurredAt,
-                Amount: Money,
-                DefaultCurrencyAmount: GetDefaultCurrencyMoney());
-        }
-
-        if (newDescription != null && newDescription != Description)
-        {
-            yield return new TransactionDescriptionUpdated(TransactionId: transactionId,
-                Description: newDescription ?? Description);
-        }
-
-        if (newCategorization != Categorization)
-        {
-            if (newCategorization.Type != Categorization.Type)
-            {
-                yield return new TransactionTypeUpdated(
-                    TransactionId: transactionId,
-                    Amount: Money,
-                    DefaultCurrencyAmount: GetDefaultCurrencyMoney(),
-                    PreviousTransactionType: Categorization.Type,
-                    NewTransactionType: newCategorization.Type,
-                    PreviousTransactionCategory: Categorization.CategoryId,
-                    NewTransactionCategory: newCategorization.CategoryId,
-                    OccuredAt: OccuredAt);
-            }
-            else
-            {
-                if (Categorization.CategoryId != null)
-                {
-                    yield return new TransactionCategoryUpdated(
-                        TransactionId: transactionId,
-                        TransactionType: Categorization.Type,
-                        PreviousTransactionCategory: Categorization.CategoryId ?? 0,
-                        NewTransactionCategory: newCategorization.CategoryId ?? 0,
-                        Amount: Money,
-                        DefaultCurrencyAmount: GetDefaultCurrencyMoney(),
-                        OccuredAt: OccuredAt);
-                }
-            }
-        }
-
-
-        if (newTransferDetails != TransferDetails)
-        {
-            yield return new TransactionWalletToUpdated(TransactionId: transactionId,
-                WalletToId: newTransferDetails?.ToWalletId,
-                WalletToExchangeRate: newTransferDetails?.ToWalletConversion.ExchangeRate,
-                WalletToCurrencyId: newTransferDetails?.ToWalletConversion.ToCurrencyCode);
-        }*/
     }
 
     public IEnumerable<object> DeleteTransaction(Guid transactionId, string userId)
@@ -260,7 +181,7 @@ public class TransactionAggregate
             Amount: Money,
             UserId: userId,
             TransactionType: Categorization.Type,
-            TransactionCategory: Categorization.CategoryId,
+            TransactionCategory: Categorization.Category,
             OccuredAt: OccuredAt,
             DefaultCurrencyAmount: GetDefaultCurrencyMoney(),
             ToWalletId: TransferDetails?.ToWalletId,
@@ -285,7 +206,7 @@ public class TransactionAggregate
         Money = e.NewAmount;
 
         Categorization =
-            new TransactionCategorization(type: e.NewTransactionType, categoryId: e.NewTransactionCategory);
+            new TransactionCategorization(type: e.NewTransactionType, category: e.NewTransactionCategory);
 
         Wallet = new WalletDetails(
             WalletId: e.NewWalletId,
@@ -315,79 +236,6 @@ public class TransactionAggregate
             TransferDetails = null;
         }
     }
-
-    /*public void Apply(IEvent<TransactionDescriptionUpdated> descriptionUpdated)
-    {
-        Description = descriptionUpdated.Data.Description;
-    }
-
-    public void Apply(IEvent<TransactionAmountUpdated> amountUpdated)
-    {
-        Money = amountUpdated.Data.NewAmount;
-    }
-
-    public void Apply(IEvent<TransactionTypeUpdated> typeUpdated)
-    {
-        Categorization = new TransactionCategorization(typeUpdated.Data.NewTransactionType,
-            typeUpdated.Data.NewTransactionCategory);
-    }
-
-    public void Apply(IEvent<TransactionCategoryUpdated> subcategoryUpdated)
-    {
-        Categorization = new TransactionCategorization(
-            Categorization.Type,
-            categoryId: subcategoryUpdated.Data.NewTransactionCategory
-        );
-    }
-
-    public void Apply(IEvent<TransactionOccuredAtUpdated> occuredAtUpdated)
-    {
-        OccuredAt = occuredAtUpdated.Data.NewOccuredAt;
-    }
-
-    public void Apply(IEvent<TransactionWalletUpdated> walletUpdated)
-    {
-        var e = walletUpdated.Data;
-
-        Money = Money with {
-            CurrencyCode = e.WalletCurrencyId
-        };
-
-        Wallet = new WalletDetails(
-            WalletId: e.WalletId,
-            DefaultCurrencyConversion: new CurrencyConversion(
-                ExchangeRate: e.WalletExchangeRate,
-                FromCurrencyCode: e.WalletCurrencyId,
-                ToCurrencyCode: Wallet.DefaultCurrencyConversion.ToCurrencyCode));
-    }
-
-    public void Apply(IEvent<TransactionWalletToUpdated> walletToUpdated)
-    {
-        var e = walletToUpdated.Data;
-
-        if (e.WalletToId is null)
-        {
-            TransferDetails = null;
-            return;
-        }
-
-        if (e.WalletToExchangeRate is null)
-        {
-            throw new InvalidOperationException("Transfer target exchange rate is missing.");
-        }
-
-        if (string.IsNullOrWhiteSpace(e.WalletToCurrencyId))
-        {
-            throw new InvalidOperationException("Transfer target currency is missing.");
-        }
-
-        TransferDetails = new TransferDetails(
-            ToWalletId: e.WalletToId.Value,
-            ToWalletConversion: new CurrencyConversion(
-                ExchangeRate: e.WalletToExchangeRate.Value,
-                FromCurrencyCode: Money.CurrencyCode,
-                ToCurrencyCode: e.WalletToCurrencyId));
-    }*/
 
     private static TransferDetails CreateTransferDetailsFrom(
         TransactionCreated created,

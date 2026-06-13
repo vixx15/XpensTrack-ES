@@ -6,7 +6,7 @@ public record CreateTransactionRequest(
     WalletRequest Wallet,
     decimal Amount,
     TransactionType TransactionType,
-    int? TransactionSubCategory,
+    TransactionCategory? Category,
     string Description,
     DateTimeOffset OccuredAt,
     TransferWalletRequest? TransferWallet

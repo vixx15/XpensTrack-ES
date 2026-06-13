@@ -10,7 +10,7 @@ public record UpdateTransaction(
     decimal Amount,
     string CurrencyCode,
     TransactionType TransactionType,
-    int? TransactionCategoryId,
+    TransactionCategory? Category,
     string Description,
     DateTimeOffset OccurredAt,
     string DefaultCurrencyCode,

@@ -39,7 +39,7 @@ public class UpdateTransactionHandler(IDocumentStore documentStore) : IRequestHa
             newAmount: new Money(value: command.Amount, currencyCode: command.CurrencyCode),
             newCategorization: new TransactionCategorization(
                 type: command.TransactionType,
-                categoryId: command.TransactionCategoryId),
+                category: command.Category),
             newDescription: command.Description,
             userId: command.UserId,
             newOccurredAt: command.OccurredAt,
