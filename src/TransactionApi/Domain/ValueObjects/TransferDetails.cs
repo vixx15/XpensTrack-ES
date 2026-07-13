@@ -1,5 +1,3 @@
-using Shared;
-
 namespace TransactionApi.Domain.ValueObjects;
 
 public sealed record TransferDetails(

@@ -1,5 +1,7 @@
 using Marten;
 using MediatR;
+using Shared.Contracts;
+using Shared.Outbox;
 using WalletApi.Application.Command;
 using WalletApi.Domain;
 
@@ -10,18 +12,19 @@ public class UpdateWalletHandler(IDocumentStore documentStore) : IRequestHandler
     public async Task Handle(UpdateWallet command, CancellationToken cancellationToken)
     {
         using var session = documentStore.LightweightSession();
-        var aggregate = await session.Events.AggregateStreamAsync<WalletAggregate>(
-            streamId: command.WalletId,
-            token: cancellationToken);
+        var stream = await session.Events.FetchForWriting<WalletAggregate>(
+            command.WalletId, cancellationToken);
 
-        if (aggregate is null)
-        {
-            throw new KeyNotFoundException(message: $"Wallet '{command.WalletId}' was not found.");
-        }
+        var aggregate = stream.Aggregate
+            ?? throw new KeyNotFoundException(message: $"Wallet '{command.WalletId}' was not found.");
+
+        if (aggregate.UserId != command.UserId)
+            throw new UnauthorizedAccessException(
+                $"Wallet '{command.WalletId}' does not belong to user '{command.UserId}'.");
 
         var events = aggregate.UpdateWallet(
                 walletId: command.WalletId,
-                userId:command.UserId,
+                userId: command.UserId,
                 name: command.NewName,
                 walletType: command.NewType)
             .ToArray();
@@ -31,7 +34,14 @@ public class UpdateWalletHandler(IDocumentStore documentStore) : IRequestHandler
             return;
         }
 
-        session.Events.Append(stream: command.WalletId, events: events);
+        stream.AppendMany(events);
+
+        session.Store(OutboxMessage.From(new WalletUpdatedIntegrationEvent(
+            WalletId: command.WalletId,
+            UserId: command.UserId,
+            Name: command.NewName,
+            WalletType: command.NewType.ToString())));
+
         await session.SaveChangesAsync(token: cancellationToken);
     }
 }

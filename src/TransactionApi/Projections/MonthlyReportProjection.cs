@@ -1,5 +1,6 @@
 using Marten.Events.Projections;
 using TransactionApi.Domain.Events;
+using TransactionApi.Infrastructure.Extensions;
 
 namespace TransactionApi.Projections;
 
@@ -9,12 +10,6 @@ public class MonthlyReportProjection : MultiStreamProjection<MonthlyReport, stri
     {
         Identity<TransactionCreated>(identityFunc: e => $"{e.OccuredAt:yyyy-MM}-{e.UserId}");
         Identity<TransactionDeleted>(identityFunc: e => $"{e.OccuredAt:yyyy-MM}-{e.UserId}");
-        /*
-        Identity<TransactionAmountUpdated>(identityFunc: e => $"{e.OccuredAt:yyyy-MM}");
-        FanOut<TransactionOccuredAtUpdated, string>(fanOutFunc: e => new[] {
-            $"{e.PreviousOccuredAt:yyyy-MM}",
-            $"{e.NewOccuredAt:yyyy-MM}"
-        }.Distinct());*/
 
         Identities<TransactionUpdated>(identitiesFunc: e => new[] {
             $"{e.OldOccuredAt:yyyy-MM}-{e.UserId}",
@@ -22,6 +17,34 @@ public class MonthlyReportProjection : MultiStreamProjection<MonthlyReport, stri
         }.Where(id => !string.IsNullOrWhiteSpace(id))
             .Distinct()
             .ToList());
+    }
+    
+    public MonthlyReport Create(TransactionUpdated @event)
+    {
+        var monthStart = new DateTimeOffset(
+            year: @event.NewOccurredAt.Year,
+            month: @event.NewOccurredAt.Month,
+            day: 1,
+            hour: 0, minute: 0, second: 0,
+            offset: @event.NewOccurredAt.Offset);
+
+        var reportId = $"{@event.NewOccurredAt:yyyy-MM}-{@event.UserId}";
+        var report = new MonthlyReport(
+            Id: reportId,
+            MonthStart: monthStart,
+            DefaultCurrencyCode: @event.NewDefaultCurrencyAmount.CurrencyCode)
+        {
+            WeeklyBreakdown = MonthlyReport.GenerateWeeklySummaries(monthStart, @event.NewDefaultCurrencyAmount.CurrencyCode)
+        };
+
+        report.ApplyTransaction(
+            type: @event.NewTransactionType,
+            categoryId: (int?)@event.NewTransactionCategory,
+            defaultCurrencyAmount: @event.NewDefaultCurrencyAmount,
+            weekOfMonth: @event.NewOccurredAt.GetWeekOfMonth(),
+            weekStart: @event.NewOccurredAt.StartOfWeek());
+
+        return report;
     }
 
     public MonthlyReport Create(TransactionCreated @event)

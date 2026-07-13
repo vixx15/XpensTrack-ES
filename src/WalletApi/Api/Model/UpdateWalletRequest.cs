@@ -1,4 +1,4 @@
-using Shared;
+using WalletApi.Domain;
 
 namespace WalletApi.Api.Model;
 

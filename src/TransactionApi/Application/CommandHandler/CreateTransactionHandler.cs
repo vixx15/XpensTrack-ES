@@ -1,21 +1,56 @@
 using Marten;
 using MediatR;
-using Shared;
+using Shared.Contracts;
 using TransactionApi.Application.Command;
+using TransactionApi.Application.Interfaces;
 using TransactionApi.Domain;
+using TransactionApi.Domain.Events;
 using TransactionApi.Domain.ValueObjects;
+using TransactionApi.Infrastructure.Documents;
+using Shared.Outbox;
 
 namespace TransactionApi.Application.CommandHandler;
 
-public class CreateTransactionHandler(IDocumentStore documentStore) : IRequestHandler<CreateTransaction, Guid>
+public class CreateTransactionHandler(
+    IDocumentStore documentStore,
+    IExchangeRateProvider exchangeRateProvider)
+    : IRequestHandler<CreateTransaction, Guid>
 {
     public async Task<Guid> Handle(CreateTransaction command, CancellationToken cancellationToken)
     {
-        //TODO wallet existance check
         var transactionId = Guid.NewGuid();
         using var session = documentStore.LightweightSession();
 
+        var wallet = await session.LoadAsync<WalletReference>(command.WalletId, cancellationToken)
+            ?? throw new KeyNotFoundException($"Wallet '{command.WalletId}' not found.");
+
+        if (wallet.UserId != command.UserId)
+            throw new UnauthorizedAccessException($"Wallet '{command.WalletId}' does not belong to user '{command.UserId}'.");
+
+        if (!string.Equals(wallet.CurrencyCode, command.CurrencyCode, StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException($"Transaction currency '{command.CurrencyCode}' does not match wallet currency '{wallet.CurrencyCode}'.");
+
+        if (command.ToWalletId is not null)
+        {
+            var toWallet = await session.LoadAsync<WalletReference>(command.ToWalletId.Value, cancellationToken)
+                ?? throw new KeyNotFoundException($"Target wallet '{command.ToWalletId}' not found.");
+
+            if (toWallet.UserId != command.UserId)
+                throw new UnauthorizedAccessException($"Target wallet '{command.ToWalletId}' does not belong to user '{command.UserId}'.");
+        }
+
         var amount = new Money(value: command.Amount, currencyCode: command.CurrencyCode);
+
+        var defaultCurrencyExchangeRate =
+            await exchangeRateProvider.GetRateAsync(command.CurrencyCode, command.DefaultCurrencyCode,
+                command.OccuredAt, cancellationToken);
+
+        decimal? toWalletExchangeRate = null;
+        if (command.ToWalletCurrencyId is not null)
+        {
+            toWalletExchangeRate = await exchangeRateProvider.GetRateAsync(command.CurrencyCode,
+                command.ToWalletCurrencyId, command.OccuredAt, cancellationToken);
+        }
 
         var transferDetails = MapTransferDetails(
             transactionType: command.TransactionType,
@@ -23,7 +58,7 @@ public class CreateTransactionHandler(IDocumentStore documentStore) : IRequestHa
             sourceAmount: amount,
             toWalletId: command.ToWalletId,
             toWalletCurrencyCode: command.ToWalletCurrencyId,
-            toWalletExchangeRate: command.ToWalletCurrencyExchangeRate);
+            toWalletExchangeRate: toWalletExchangeRate);
 
         var events = TransactionAggregate.Create(
             transactionId: transactionId,
@@ -36,11 +71,29 @@ public class CreateTransactionHandler(IDocumentStore documentStore) : IRequestHa
             description: command.Description,
             occuredAt: command.OccuredAt,
             defaultCurrencyCode: command.DefaultCurrencyCode,
-            defaultCurrencyExchangeRate: command.DefaultCurrencyExchangeRate,
-            transferDetails: transferDetails);
+            defaultCurrencyExchangeRate: defaultCurrencyExchangeRate,
+            transferDetails: transferDetails).ToList();
         session.Events.StartStream<TransactionAggregate>(id: transactionId, events: events);
-        await session.SaveChangesAsync(token: cancellationToken);
 
+        var createdEvent = events.OfType<TransactionCreated>().First();
+        session.Store(OutboxMessage.From(new TransactionCreatedIntegrationEvent(
+            createdEvent.TransactionId,
+            createdEvent.WalletId,
+            createdEvent.UserId,
+            createdEvent.Amount.Value,
+            createdEvent.Amount.CurrencyCode,
+            createdEvent.TransactionType.ToString(),
+            createdEvent.OccuredAt,
+            createdEvent.DefaultCurrencyAmount.Value,
+            createdEvent.DefaultCurrencyAmount.CurrencyCode,
+            createdEvent.ToWalletId,
+            createdEvent.ToWalletAmount?.Value,
+            createdEvent.ToWalletAmount?.CurrencyCode,
+            createdEvent.ToWalletCurrencyExchangeRate,
+            createdEvent.ToWalletCurrencyCode)));
+
+        await session.SaveChangesAsync(token: cancellationToken);
+        
         return transactionId;
     }
 

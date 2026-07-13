@@ -8,4 +8,5 @@ public record WalletSummary(
     int WalletTypeId,
     string TypeName,
     decimal DefaultCurrencyAmount,
-    string DefaultCurrencyCode);
+    string DefaultCurrencyCode,
+    string UserId);

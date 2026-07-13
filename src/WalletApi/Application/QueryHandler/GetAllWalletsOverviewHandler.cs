@@ -1,7 +1,8 @@
 using Marten;
 using MediatR;
-using Shared;
 using WalletApi.Application.Query;
+using WalletApi.Domain;
+using WalletApi.Infrastructure.Localization;
 using WalletApi.Projections;
 
 namespace WalletApi.Application.QueryHandler;

@@ -1,5 +1,5 @@
 using MediatR;
-using Shared;
+using TransactionApi.Domain;
 
 namespace TransactionApi.Application.Command;
 
@@ -14,10 +14,8 @@ public record UpdateTransaction(
     string Description,
     DateTimeOffset OccurredAt,
     string DefaultCurrencyCode,
-    decimal DefaultCurrencyExchangeRate,
     UpdateTransactionTransferWallet? TransferWallet) : IRequest;
 
 public record UpdateTransactionTransferWallet(
     Guid ToWalletId,
-    string ToWalletCurrencyCode,
-    decimal ToWalletExchangeRate);
+    string ToWalletCurrencyCode);

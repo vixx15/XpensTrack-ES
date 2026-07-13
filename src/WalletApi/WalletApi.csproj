@@ -13,13 +13,22 @@
 
     <ItemGroup>
         <PackageReference Include="Marten" Version="8.37.0" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" />
         <PackageReference Include="MediatR" Version="14.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
+        <PackageReference Include="Google.Protobuf" Version="3.26.1" />
+        <PackageReference Include="Grpc.Net.Client" Version="2.63.0" />
+        <PackageReference Include="Grpc.Net.ClientFactory" Version="2.63.0" />
+        <PackageReference Include="Grpc.Tools" Version="2.63.0" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Shared\Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf Include="..\Shared\Protos\exchange_rate.proto" GrpcServices="Client" Link="Protos\exchange_rate.proto" />
     </ItemGroup>
 
 </Project>

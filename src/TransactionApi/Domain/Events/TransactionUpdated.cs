@@ -1,4 +1,4 @@
-using Shared;
+using TransactionApi.Domain.ValueObjects;
 
 namespace TransactionApi.Domain.Events;
 
@@ -13,6 +13,9 @@ public record TransactionUpdated(
     string OldDescription,
     DateTimeOffset OldOccuredAt,
     Guid? OldToWalletId,
+    Money? OldToWalletAmount,
+    decimal? OldToWalletCurrencyExchangeRate,
+    string? OldToWalletCurrencyCode,
     Guid NewWalletId,
     decimal NewWalletExchangeRate,
     string NewWalletCurrencyCode,

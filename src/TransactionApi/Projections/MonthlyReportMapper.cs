@@ -1,4 +1,5 @@
-using Shared;
+using TransactionApi.Domain;
+using TransactionApi.Infrastructure.Localization;
 
 namespace TransactionApi.Projections;
 

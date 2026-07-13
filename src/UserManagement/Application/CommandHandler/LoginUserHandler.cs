@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using UserManagement.Api.Model;
 using UserManagement.Application.Command;
+using UserManagement.Application.Exceptions;
 using UserManagement.Data;
 using UserManagement.Services;
 
@@ -17,13 +18,13 @@ public class LoginUserHandler(
         var user = await userManager.FindByEmailAsync(command.Email);
         if (user is null)
         {
-            throw new UnauthorizedAccessException("Invalid email or password.");
+            throw new AuthenticationFailedException("Invalid email or password.");
         }
 
         var signInResult = await signInManager.CheckPasswordSignInAsync(user, command.Password, false);
         if (!signInResult.Succeeded)
         {
-            throw new UnauthorizedAccessException("Invalid email or password.");
+            throw new AuthenticationFailedException("Invalid email or password.");
         }
 
         var token = jwtService.GenerateToken(

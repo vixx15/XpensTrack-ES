@@ -1,5 +1,5 @@
 using MediatR;
-using Shared;
+using WalletApi.Domain;
 
 namespace WalletApi.Application.Command;
 

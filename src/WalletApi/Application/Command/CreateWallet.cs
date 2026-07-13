@@ -1,13 +1,12 @@
 using MediatR;
-using Shared;
+using WalletApi.Domain;
 
 namespace WalletApi.Application.Command;
 
 public record CreateWallet(
     string Name,
-    decimal Amount,
+    decimal OpeningBalance,
     string CurrencyCode,
     WalletType WalletType,
     string UserId,
-    string DefaultCurrencyCode,
-    decimal DefaultCurrencyExchangeRate) : IRequest<Guid>;
+    string DefaultCurrencyCode) : IRequest<Guid>;

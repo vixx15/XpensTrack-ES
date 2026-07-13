@@ -1,5 +1,3 @@
-using Shared;
-
 namespace WalletApi.Domain.ValueObjects;
 
 public record CurrencyConversion(
@@ -20,6 +18,7 @@ public record CurrencyConversion(
             throw new InvalidOperationException("Exchange rate must be positive.");
         }
 
-        return new Money(value: money.Value * ExchangeRate, currencyCode: ToCurrencyCode);
+        var converted = Math.Round(money.Value * ExchangeRate, 2, MidpointRounding.AwayFromZero);
+        return new Money(value: converted, currencyCode: ToCurrencyCode);
     }
 }

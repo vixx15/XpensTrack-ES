@@ -1,0 +1,35 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "XpensTrack.CurrencyApi.Api.Grpc";
+
+package exchange_rate;
+
+service ExchangeRateRpc {
+  rpc GetCurrentRate (GetCurrentRateRequest) returns (GetCurrentRateResponse);
+  rpc GetHistoricalRate (GetHistoricalRateRequest) returns (GetHistoricalRateResponse);
+}
+
+message GetCurrentRateRequest {
+  string from = 1;
+  string to = 2;
+}
+
+message GetCurrentRateResponse {
+  string from = 1;
+  string to = 2;
+  double rate = 3;
+}
+
+message GetHistoricalRateRequest {
+  string from = 1;
+  string to = 2;
+  google.protobuf.Timestamp date = 3;
+}
+
+message GetHistoricalRateResponse {
+  string from = 1;
+  string to = 2;
+  double rate = 3;
+  google.protobuf.Timestamp date = 4;
+}

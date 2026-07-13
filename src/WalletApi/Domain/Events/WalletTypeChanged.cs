@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using Shared;
 
 namespace WalletApi.Domain.Events;
 

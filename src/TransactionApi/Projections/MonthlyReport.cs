@@ -1,4 +1,6 @@
-using Shared;
+using TransactionApi.Domain;
+using TransactionApi.Domain.ValueObjects;
+using TransactionApi.Infrastructure.Extensions;
 
 namespace TransactionApi.Projections;
 

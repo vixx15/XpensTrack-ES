@@ -1,9 +1,9 @@
-using Shared;
+using WalletApi.Domain;
 
 namespace WalletApi.Api.Model;
 
 public record CreateWalletRequest(
     string Name,
-    decimal Amount,
+    decimal OpeningBalance,
     string CurrencyCode,
     WalletType WalletType);

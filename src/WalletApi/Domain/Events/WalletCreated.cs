@@ -1,14 +1,14 @@
 using System.Text.Json.Serialization;
-using Shared;
+using WalletApi.Domain.ValueObjects;
 
 namespace WalletApi.Domain.Events;
 
 public sealed record WalletCreated(
     Guid WalletId,
     string Name,
-    Money Amount,
+    Money OpeningBalance,
     [property: JsonPropertyName("walletTypeId")] WalletType WalletType,
     string UserId,
     decimal DefaultCurrencyExchangeRate,
-    Money DefaultCurrencyAmount
+    Money DefaultCurrencyOpeningBalance
 );

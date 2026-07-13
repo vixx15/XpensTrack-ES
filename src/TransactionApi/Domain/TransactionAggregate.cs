@@ -1,7 +1,6 @@
 using JasperFx.Events;
 using Marten.Metadata;
 using Marten.Schema;
-using Shared;
 using TransactionApi.Domain.Events;
 using TransactionApi.Domain.ValueObjects;
 
@@ -11,6 +10,7 @@ public class TransactionAggregate
 {
     public int Version { get; set; }
     [Identity] public Guid TransactionId { get; private set; }
+    public string UserId { get; private set; } = string.Empty;
     public WalletDetails Wallet { get; private set; }
     public Money Money { get; private set; }
     public TransactionCategorization Categorization { get; private set; }
@@ -43,12 +43,12 @@ public class TransactionAggregate
             categorization: categorization,
             transferDetails: transferDetails);
 
-        Money? toWalletMoney = null;
-        if (transferDetails != null)
-        {
-            toWalletMoney = new Money(value: amount.Value * transferDetails.ToWalletConversion.ExchangeRate,
-                currencyCode: transferDetails.ToWalletConversion.ToCurrencyCode);
-        }
+        Money? toWalletMoney = transferDetails?.ToWalletConversion.Convert(amount);
+
+        var defaultCurrencyConversion = new CurrencyConversion(
+            ExchangeRate: defaultCurrencyExchangeRate,
+            FromCurrencyCode: amount.CurrencyCode,
+            ToCurrencyCode: defaultCurrencyCode);
 
         yield return new TransactionCreated(
             TransactionId: transactionId,
@@ -59,8 +59,7 @@ public class TransactionAggregate
             TransactionCategory: categorization.Category,
             Description: description,
             OccuredAt: occuredAt,
-            DefaultCurrencyAmount: new Money(value: amount.Value * defaultCurrencyExchangeRate,
-                currencyCode: defaultCurrencyCode),
+            DefaultCurrencyAmount: defaultCurrencyConversion.Convert(amount),
             DefaultCurrencyExchangeRate: defaultCurrencyExchangeRate,
             ToWalletId: transferDetails?.ToWalletId,
             ToWalletAmount: toWalletMoney,
@@ -78,6 +77,7 @@ public class TransactionAggregate
             ToCurrencyCode: created.DefaultCurrencyAmount.CurrencyCode));
 
         TransactionId = created.TransactionId;
+        UserId = created.UserId;
         Categorization =
             new TransactionCategorization(type: created.TransactionType, category: created.TransactionCategory);
         Description = created.Description;
@@ -133,13 +133,7 @@ public class TransactionAggregate
 
         var newDefaultCurrencyAmount = newWallet.DefaultCurrencyConversion.Convert(money: newAmount);
 
-        Money? toWalletMoney = null;
-        if (newTransferDetails != null)
-        {
-            toWalletMoney = new Money(
-                value: newAmount.Value * newTransferDetails.ToWalletConversion.ExchangeRate,
-                currencyCode: newTransferDetails.ToWalletConversion.ToCurrencyCode);
-        }
+        Money? toWalletMoney = newTransferDetails?.ToWalletConversion.Convert(newAmount);
 
         yield return new TransactionUpdated(
             TransactionId: transactionId,
@@ -152,6 +146,9 @@ public class TransactionAggregate
             OldDescription: Description,
             OldOccuredAt: OccuredAt,
             OldToWalletId: TransferDetails?.ToWalletId,
+            OldToWalletAmount: TransferDetails?.ConvertToTargetWallet(Money),
+            OldToWalletCurrencyExchangeRate: TransferDetails?.ToWalletConversion.ExchangeRate,
+            OldToWalletCurrencyCode: TransferDetails?.ToWalletConversion.ToCurrencyCode,
             NewWalletId: newWallet.WalletId,
             NewWalletExchangeRate: newWallet.DefaultCurrencyConversion.ExchangeRate,
             NewWalletCurrencyCode: newWallet.DefaultCurrencyConversion.FromCurrencyCode,

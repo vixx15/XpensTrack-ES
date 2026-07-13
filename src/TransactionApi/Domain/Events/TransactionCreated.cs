@@ -1,4 +1,4 @@
-using Shared;
+using TransactionApi.Domain.ValueObjects;
 
 namespace TransactionApi.Domain.Events;
 
